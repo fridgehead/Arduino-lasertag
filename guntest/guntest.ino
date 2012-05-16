@@ -13,11 +13,13 @@ Shield test sketch
 
 For testing newly built shields
 > button causes buzzer to beep
-> lights should light up
+> health and shield LEDS will cycle
+
 
 */
 
-
+int v = 1;
+long lastChangeTime = 0;
 void setup(){
   
   pinMode(SPEAKER, OUTPUT);
@@ -39,7 +41,20 @@ void setup(){
 void loop(){
   if(digitalRead(TRIGGER) == LOW){
     analogWrite(SPEAKER, 100);
+   
   } else {
     analogWrite(SPEAKER, 0);
+    
   }
+  
+  if(lastChangeTime + 500 < millis()){
+    lastChangeTime = millis();
+    v = v << 1;
+    v = v % 0xFF;
+    digitalWrite(LATCHPIN, LOW);
+    shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, v);
+    shiftOut(DATAPIN, CLOCKPIN, MSBFIRST, v);
+    digitalWrite(LATCHPIN,HIGH);
+  }
+  
 }
